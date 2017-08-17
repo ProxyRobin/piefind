@@ -9,9 +9,12 @@ parser.add_argument("-o", "--output", help="output verbose report to file")
 parser.add_argument("-s", "--silent", action='store_true', help="disable output to terminal")
 args = parser.parse_args()
 
+ssn=r'\b(?P<ssn>\d{3}[\. -]?\d{2}[\. -]?\d{4})\b'
+cc=r'\b(?P<cc>\d{4}|[xX*#\-_]{4}[\. \-]?(\d{4}|[xX*#\-_]{4})[\. \-]?(\d{4}|[xX*#\-_]{4})[\. \-]?\d{4})\b'
+
 path = args.filepath
 files =  os.listdir(path)
-pattern = re.compile(r'\b((\d{3}[\. -]?\d{2}[\. -]?\d{4})|((\d{4}|[xX*#\-_]{4})[\. \-]?(\d{4}|[xX*#\-_]{4})[\. \-]?(\d{4}|[xX*#\-_]{4})[\. \-]?\d{4}))\b')
+pattern = re.compile(cc)
 matches = args.matchnum
 if args.output:
 	report = open(args.output,'w')
@@ -37,7 +40,7 @@ for root, dirs, files in os.walk(path):
 			except:
 				pass
 			else:
-				results = pattern.findall(text)
+				results = pattern.finditer(text)
 				if len(results) >= matches:
 					posscount += 1
 					if args.output:
@@ -48,4 +51,3 @@ if args.output:
 	report.write("Finished, found " + str(posscount) + " possible disclosures. Visited " + str(dircount) + " directories and " + str(filecount) + " files.")
 if not args.silent:
 	print("[+]Finished, found %d possible disclosures. Visited %d directories and %d files." % (posscount, dircount, filecount))
-
